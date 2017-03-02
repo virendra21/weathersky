@@ -8,6 +8,8 @@ import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -15,6 +17,17 @@ import javax.persistence.TemporalType;
 
 
 @Entity
+@NamedQueries({ 
+	@NamedQuery(name = "Weather.findcity", query = "SELECT DISTINCT w.city FROM Weather w"),
+	@NamedQuery(name = "Weather.findbycity", query = "select w from Weather w where w.city =:pCity order by w.timestamp desc"),
+	@NamedQuery(name = "Weather.findTemperatureByCity", query = "select w.temperature from Weather w where w.city =:pCity order by w.timestamp desc"),
+	@NamedQuery(name = "Weather.findHumidityByCity", query = "select w.humidity from Weather w where w.city =:pCity order by w.timestamp desc "),
+	@NamedQuery(name = "Weather.findHourlyAvg", query = "SELECT   avg(w.humidity) As HourlyHumidity,avg(w.pressure) As HourlyPressure, avg(w.temperature) As "
+			+ "HourlyTemperature from Weather w where w.city='pCity' group by HOUR(timestamp)"),
+
+	@NamedQuery(name = "Weather.findDailyAvg", query = "SELECT   avg(w.humidity) As DailylyHumidity,avg(w.pressure) As DailyPressure, avg(w.temperature) As "
+			+ "DailyTemperature from Weather w where w.city='pCity' group by DAY(timestamp)")
+})
 public class Weather {
 
 	@Id

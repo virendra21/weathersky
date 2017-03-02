@@ -4,8 +4,12 @@ import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -16,40 +20,43 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
+@PropertySource(value = "classpath:application.properties")
 public class JPAConfig {
 
+	@Autowired
+	private Environment env;
+
 	@Bean
-	public LocalContainerEntityManagerFactoryBean createEmf() {
+	public LocalContainerEntityManagerFactoryBean emf() {
 		LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
 		emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+		emf.setDataSource(getDatasource());
 		emf.setPackagesToScan("io.egen.weather.entity");
-		emf.setDataSource(dataSource());
 		emf.setJpaProperties(jpaProperties());
 		return emf;
 	}
 
 	@Bean
-	public DataSource dataSource() {
+	public DataSource getDatasource() {
 		DriverManagerDataSource ds = new DriverManagerDataSource();
 		ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
-		ds.setUrl("jdbc:mysql://localhost:3306/weatherDB?useSSL=false");
-		ds.setUsername("root");
-		ds.setPassword("");
+		ds.setUrl(env.getProperty("db.url"));
+		ds.setUsername(env.getProperty("db.user", "root"));
+		ds.setPassword(env.getProperty("db.password", "adsfasdfasd"));
 		return ds;
 	}
 
 	@Bean
 	public PlatformTransactionManager txnMgr(EntityManagerFactory emf) {
-		JpaTransactionManager txnMgr = new JpaTransactionManager(emf);
-		return txnMgr;
+		return new JpaTransactionManager(emf);
 	}
 
 	private Properties jpaProperties() {
-		Properties prop = new Properties();
-		prop.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-		prop.setProperty("hibernate.hbm2ddl.auto", "create");
-		prop.setProperty("hibernate.show_sql", "true");
-		prop.setProperty("hibernate.format_sql", "true");
-		return prop;
+		Properties props = new Properties();
+		props.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+		props.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl"));
+		props.setProperty("hibernate.show_sql", env.getProperty("hibernate.show.sql"));
+		props.setProperty("hibernate.format_sql", env.getProperty("hibernate.format.sql"));
+		return props;
 	}
 }

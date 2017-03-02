@@ -6,9 +6,13 @@ import io.egen.weather.entity.*;
 
 public interface WeatherRepository {
 
-	public List<Weather> findcity(String city);
-
+	public List<String> findcity();
+	public Weather findbycity(String city);
+	public double findWeatherByCityTemprature(String city);
+	public double findWeatherByHumidityCity(String city);
 	public Weather create(Weather weather);
-
+	public Weather findByHour(String city);
+	public Weather findByDay(String city);
+	
 
 }

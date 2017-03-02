@@ -17,9 +17,9 @@ public class WeatherServiceImpl implements WeatherService {
 	WeatherRepository repository;
 
 	@Override
-	public List<Weather> findcity(String city) {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional(readOnly = true)
+	public List<String> findcity() {	
+		return repository.findcity();
 	}
 
 	@Override
@@ -27,6 +27,41 @@ public class WeatherServiceImpl implements WeatherService {
 	public Weather create(Weather weather) {
 		// TODO Auto-generated method stub
 		return repository.create(weather);
+	}
+
+	@Override
+	public Weather findbycity(String city) {
+		// TODO Auto-generated method stub
+		return repository.findbycity(city);
+	}
+//
+//	@Override
+//	public Weather findbyproperty(String city) {
+//		// TODO Auto-generated method stub
+//		return repository.findbyproperty(city);
+//	}
+
+	@Override
+	public double findWeatherByCityTemprature(String city) {
+		// TODO Auto-generated method stub
+		return repository.findWeatherByCityTemprature(city);
+	}
+
+	@Override
+	public double findWeatherByHumidityCity(String city) {
+		// TODO Auto-generated method stub
+		return repository.findWeatherByHumidityCity(city);
+	}
+
+	@Override
+	public Weather findByHour(String city) {
+		// TODO Auto-generated method stub
+		return repository.findByHour(city);
+	}
+
+	@Override
+	public Weather findByDay(String city) {
+		return repository.findByDay(city);
 	}
 
 }
